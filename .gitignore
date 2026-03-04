@@ -1,0 +1,10 @@
+# Large raw recovery files (1.5MB each, contain binary+JSON fragments)
+# See raw-recovery/README.md for details
+raw-recovery/*.json
+
+# OSRS item mapping (837KB, downloadable from https://prices.runescape.wiki/api/v1/osrs/mapping)
+osrs_mapping.json
+
+# OS artifacts
+Thumbs.db
+.DS_Store
