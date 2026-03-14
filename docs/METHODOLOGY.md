@@ -29,7 +29,7 @@ The [Flipping Utilities](https://github.com/Flipping-Utilities/flipping-utilitie
     ...
   ],
   "sessionStartTime": 0,
-  "slotTimers": [],
+  "slotTimers": [{"slotIndex":0,"offerOccurredAtUnknownTime":false}, ...],  // 8 entries required (slots 0-7)
   "recipeFlipGroups": [],
   "lastStoredAt": 1771988086233,
   "lastModifiedAt": 1708053179683

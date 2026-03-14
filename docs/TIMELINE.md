@@ -47,3 +47,23 @@ All times are Eastern Standard Time (EST).
 | Phase 4 | Full block scan of backup shadow copy | Found 6 data blocks, extracted **67 unique trade items** |
 | Phase 5 | Merged with GE data from [RuneLite.net account profile](https://runelite.net/account/grand-exchange) | Combined to **482 items** with 1,108 slot offers |
 | Final | PhotoRec raw disk scan | 0 results — SSD TRIM had already zeroed freed clusters |
+
+## Feb 26 – Mar 14, 2026 — Silent trade recording failure
+
+| Time | Event |
+|------|-------|
+| ~Feb 26 | Recovery file deployed with `"slotTimers": []` — plugin begins throwing `IndexOutOfBoundsException` on every GE offer event |
+| Feb 26 – Mar 14 | All real-time GE trades silently dropped; GE History Tab imports (slot -1) continue working normally, masking the failure |
+| Mar 14 01:03 | `client.log` shows 3 `IndexOutOfBoundsException` at `screenOfferEvent` lines 134, 152, 163 |
+| Mar 14 14:53 | Same errors repeated on second session — confirmed systematic, not transient |
+| Mar 14 17:07 | Root cause identified: `slotTimers` empty array causes `ArrayList.get(slot)` to fail for any GE slot index |
+| Mar 14 17:15 | Fix applied: populated `slotTimers` with 8 default entries while RuneLite closed; backup created at `Knife Lord.json.pre-fix-backup` |
+
+## Phase 6: slotTimers Fix
+
+| Phase | Action | Result |
+|-------|--------|--------|
+| Phase 6 | Diagnosed `IndexOutOfBoundsException` in `screenOfferEvent()` | Empty `slotTimers[]` from recovery caused plugin to silently drop all real-time GE offers |
+| Phase 6 | Populated `slotTimers` with 8 default slot entries | Real-time trade recording restored |
+
+See: [SLOT_TIMER_BUG.md](SLOT_TIMER_BUG.md) for full technical analysis.

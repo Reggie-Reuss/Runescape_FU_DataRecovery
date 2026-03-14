@@ -46,6 +46,12 @@ Merged the 67 shadow-copy trades with 1,024 transactions (415 additional items) 
 
 As a last resort, attempted raw sector carving with PhotoRec using a custom signature matching the FU file header (`{"lastOffers`). **Zero files recovered** — confirming SSD TRIM had already zeroed all freed clusters, 6 days after the crash.
 
+### [Phase 6: slotTimers Bug Fix](scripts/phase6-slot-timer-fix/)
+
+Post-recovery, discovered that **all real-time GE trades were silently failing** since the recovered file was deployed. The recovery produced `"slotTimers": []` (empty array) — the plugin expects exactly 8 entries (one per GE slot). Every GE offer event triggered an `IndexOutOfBoundsException` in `screenOfferEvent()`, silently dropping the trade. GE History Tab imports continued working (different code path), which masked the failure for ~16 days.
+
+Fix: populated `slotTimers` with 8 default `SlotActivityTimer` entries. See: [SLOT_TIMER_BUG.md](docs/SLOT_TIMER_BUG.md)
+
 ---
 
 ## Results
@@ -88,7 +94,8 @@ RL_FU_DataRecovery/
 │   ├── phase2-repair-attempts/     # VSS recovery, file repair
 │   ├── phase3-partial-extraction/  # 8KB header extraction, GE analysis
 │   ├── phase4-block-analysis/      # NTFS block scanning, 67-trade recovery
-│   └── phase5-merge-finalize/      # GE merge, item name resolution, validation
+│   ├── phase5-merge-finalize/      # GE merge, item name resolution, validation
+│   └── phase6-slot-timer-fix/      # slotTimers bug diagnosis and fix
 ├── data/
 │   ├── samples/                    # Intermediate recovery outputs
 │   ├── input/                      # External GE transaction data
@@ -97,7 +104,8 @@ RL_FU_DataRecovery/
 ├── docs/
 │   ├── TIMELINE.md                 # Chronological event sequence
 │   ├── METHODOLOGY.md              # Technical deep-dive
-│   └── BLOCK_MAP.md                # Backup file data block diagram
+│   ├── BLOCK_MAP.md                # Backup file data block diagram
+│   └── SLOT_TIMER_BUG.md           # Post-recovery slotTimers bug analysis
 └── raw-recovery/                   # Large recovery files (gitignored)
     └── README.md                   # Explains excluded files
 ```
